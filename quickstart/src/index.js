@@ -8,6 +8,7 @@ const micLevel = require('./miclevel');
 const selectMedia = require('./selectmedia');
 const selectRoom = require('./selectroom');
 const showError = require('./showerror');
+const localMediaControls= require('../../examples/localmediacontrols/src/');
 
 const $modals = $('#modals');
 const $selectMicModal = $('#select-mic', $modals);
@@ -148,3 +149,28 @@ async function selectMicrophone() {
 window.addEventListener('load', isSupported ? selectMicrophone : () => {
   showError($showErrorModal, new Error('This browser is not supported.'));
 });
+
+console.log(localMediaControls, "is the local media controls")
+
+$(document).ready(function(){
+  $("#muteAudio").click(function() {
+    console.log("Trying to mute this room", window.room)
+    window.room.localParticipant.audioTracks.forEach(track => {
+      console.log("Audio track is:", track)
+      track.track.isEnabled ? track.track.disable() : track.track.enable()
+    });
+  });
+  $("#muteVideo").click(function() {
+    window.room.localParticipant.videoTracks.forEach(track => {
+      console.log("Videotrack is:", track)
+      track.track.isEnabled ? track.track.disable() : track.track.enable()
+    });
+  });
+  $("#toggleRecording").click(function() {
+    console.log("Starting the recording", window.room.recordingRules)
+    window.room
+            .recordingRules
+            .update({rules: [{"type": "include", "all": true}]})
+            .then(recording_rules => console.log(recording_rules.roomSid));
+  });
+})
