@@ -86,6 +86,22 @@ app.get('/token', function(request, response) {
   response.send(token.toJwt());
 });
 
+app.get('/toggleRecording', function(request, response) {
+  const { roomSid, startRecording } = request.query;
+  console.log(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+  const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  console.log(roomSid, startRecording)
+  var recordingType = startRecording === true ? "include" : "exlude";
+  console.log(recordingType, " is the recording type");
+  client.video.rooms(roomSid)
+    .recordingRules
+    .update({rules: [{"type": recordingType, "all": true}]})
+    .then(recording_rules => {
+      console.log(recording_rules.roomSid)
+      response.send(recording_rules);
+    });
+});
+
 // Create http server and run it.
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;

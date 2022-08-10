@@ -166,11 +166,9 @@ $(document).ready(function(){
       track.track.isEnabled ? track.track.disable() : track.track.enable()
     });
   });
-  $("#toggleRecording").click(function() {
-    console.log("Starting the recording", window.room.recordingRules)
-    window.room
-            .recordingRules
-            .update({rules: [{"type": "include", "all": true}]})
-            .then(recording_rules => console.log(recording_rules.roomSid));
+  $("#toggleRecording").click(async function() {
+    var startRecording = !window.room.isRecording
+    const response = await fetch(`/toggleRecording?roomSid=${window.room.sid}&startRecording=${startRecording}`);
+    console.log(" recording updated ", response);
   });
 })
